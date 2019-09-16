@@ -50,6 +50,11 @@ function! multihighlight#new_highlight(mode) range abort " {{{
   endif
 endfunction " }}}
 
+function! multihighlight#toggle_highlight(mode) range abort " {{{
+  call multihighlight#new_highlight(a:mode)
+endfunction
+" }}}
+
 function! multihighlight#nohighlight_all() abort " {{{
   for word in g:multihighlight#highlighting_words
     if type(word) == v:t_string
@@ -129,7 +134,6 @@ function! multihighlight#navigation(direction) abort " {{{
     endtry
   endif
 endfunction " }}}
-
 
 " utility function {{{
 function! s:case_ignored(word) abort
