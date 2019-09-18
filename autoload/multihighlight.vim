@@ -220,7 +220,7 @@ function! s:build_colors() abort
 
   augroup MultihighlightAutohighlihgt
     autocmd!
-    autocmd WinEnter * call s:add_all_existing_maches()
+    autocmd WinNew * call s:add_all_existing_maches()
   augroup END
 
   let s:has_built = 1
