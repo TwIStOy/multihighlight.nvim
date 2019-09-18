@@ -161,7 +161,7 @@ function! s:apply_color(n, word, mode, mid) abort
 endfunction
 
 function! s:add_all_existing_maches() abort
-  for i in len(g:multihighlight#highlighting_words)
+  for i in range(len(g:multihighlight#highlighting_words))
     if type(g:multihighlight#highlighting_words[i]) == v:t_string
       let l:word = g:multihighlight#highlighting_words[i]
       let case = s:case_ignored(l:word) ? '\c' : '\C'
