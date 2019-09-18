@@ -4,8 +4,8 @@
 " global variables (states) {{{
 
 let s:default_gui_colors = [ '#aeee00', '#ff0000',
-      \ '#0000ff', '#b88823', '#ffa724', '#ff2c4b'
-      \ ]
+      \                      '#0000ff', '#b88823', '#ffa724', '#ff2c4b'
+      \                    ]
 let s:default_terms_colors = [ '154', '121', '211', '137', '214', '222' ]
 let s:highlight_prefix = 'MultiHighlight'
 let s:has_built = 0
@@ -95,7 +95,7 @@ function! multihighlight#nohighlight_word(word) abort " {{{
   if index > -1
     let mid = g:multihighlight#matches_id[a:word]
 
-    silent! call matchdelete(mid)
+    windo silent! call matchdelete(mid)
     let g:multihighlight#highlighting_words[index] = 0
     unlet g:multihighlight#matches_id[a:word]
   endif
@@ -153,7 +153,7 @@ function! s:apply_color(n, word, mode, mid) abort
     let pat = case . '\V\<' . escape(a:word, '\') . '\>'
   endif
 
-  call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid)
+  windo call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid)
 endfunction
 
 function! s:nearest_group_at_cursor() abort
