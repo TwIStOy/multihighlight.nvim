@@ -156,13 +156,15 @@ function! s:apply_color(n, word, mode, mid) abort
     let pat = case . '\V\<' . escape(a:word, '\') . '\>'
   endif
 
-  let settings = { 'window': 1 }
-  for w in range(1, winnr('$'))
-    let settings.window = w
-    call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid, settings)
-  endfor
+  " let settings = { 'window': 1 }
+  " for w in range(1, winnr('$'))
+  "   let settings.window = w
+  "   call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid, settings)
+  " endfor
 
-  exec 'redraw'
+  let win_now = winnr()
+  windo call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid)
+  exec win_now . 'wincmd w'
 endfunction
 
 function! s:add_all_existing_maches() abort
