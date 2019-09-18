@@ -171,7 +171,7 @@ function! s:add_all_existing_maches() abort
         let pat = case . '\V\<' . escape(l:word, '\') . '\>'
       endif
 
-      call matchadd(s:highlight_prefix . (i + 1), pat, 1,  595129 + n)
+      call matchadd(s:highlight_prefix . (i + 1), pat, 1,  595129 + i)
     endif
   endfor
 endfunction
