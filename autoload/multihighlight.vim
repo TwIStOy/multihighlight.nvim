@@ -100,7 +100,7 @@ function! multihighlight#nohighlight_word(word) abort " {{{
     let g:multihighlight#highlighting_words[index] = 0
     unlet g:multihighlight#matches_id[a:word]
 
-    exec 'normal ' win_now . 'wincmd w'
+    exec win_now . 'wincmd w'
   endif
 endfunction " }}}
 
