@@ -158,6 +158,8 @@ function! s:apply_color(n, word, mode, mid) abort
     let settings.window = w
     call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid, settings)
   endfor
+
+  exec 'redraw'
 endfunction
 
 function! s:add_all_existing_maches() abort
