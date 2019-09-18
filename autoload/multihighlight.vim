@@ -160,6 +160,21 @@ function! s:apply_color(n, word, mode, mid) abort
   endfor
 endfunction
 
+function! s:add_all_existing_maches() abort
+  let case = s:case_ignored(a:word) ? '\c' : '\C'
+  if a:mode == 'v'
+    let pat = case . '\V\zs' . escape(a:word, '\') . '\ze'
+  else
+    let pat = case . '\V\<' . escape(a:word, '\') . '\>'
+  endif
+
+  for i in len(g:multihighlight#highlighting_words)
+    if type(g:multihighlight#highlighting_words[i]) == v:t_string
+      call matchadd(s:highlight_prefix . (i + 1), pat, 1,  595129 + n)
+    endif
+  endfor
+endfunction
+
 function! s:nearest_group_at_cursor() abort
   let l:matches = {}
   for l:match_item in getmatches()
@@ -201,6 +216,11 @@ function! s:build_colors() abort
     call add(g:multihighlight#recently_used, currentIndex-1)
     let currentIndex += 1
   endfor
+
+  augroup MultihighlightAutohighlihgt
+    autocmd!
+    autocmd WinEnter * call s:add_all_existing_maches()
+  augroup END
 
   let s:has_built = 1
 endfunc
