@@ -153,7 +153,11 @@ function! s:apply_color(n, word, mode, mid) abort
     let pat = case . '\V\<' . escape(a:word, '\') . '\>'
   endif
 
-  windo call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid)
+  let settings = { 'window': 1 }
+  for w in range(1, winnr('$'))
+    let settings.window = w
+    call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid, settings)
+  endfor
 endfunction
 
 function! s:nearest_group_at_cursor() abort
