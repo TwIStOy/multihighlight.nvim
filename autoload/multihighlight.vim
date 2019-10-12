@@ -28,6 +28,7 @@ let g:multihighlight#matches_id = get(g:,
 let g:multihighlight#recently_used = get(g:,
       \ 'multihighlight#recently_used', [])
 
+let g:multihighlight_last_search_word = 0
 " }}}
 
 function! multihighlight#new_highlight(mode) range abort " {{{
@@ -155,12 +156,6 @@ function! s:apply_color(n, word, mode, mid) abort
   else
     let pat = case . '\V\<' . escape(a:word, '\') . '\>'
   endif
-
-  " let settings = { 'window': 1 }
-  " for w in range(1, winnr('$'))
-  "   let settings.window = w
-  "   call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid, settings)
-  " endfor
 
   let win_now = winnr()
   windo call matchadd(s:highlight_prefix . (a:n + 1), pat, 1, a:mid)

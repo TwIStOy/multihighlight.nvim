@@ -1,4 +1,4 @@
-function! multihighlight#utils#virtual_selection() abort
+function! multihighlight#utils#visual_selection() abort
   let [lnum1, col1] = getpos("'<")[1:2]
   let [lnum2, col2] = getpos("'>")[1:2]
   let lines = getline(lnum1, lnum2)
@@ -6,4 +6,5 @@ function! multihighlight#utils#virtual_selection() abort
   let lines[0] = lines[0][col1 - 1:]
   return join(lines, "\n")
 endfunction
+
 
