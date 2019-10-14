@@ -5,7 +5,7 @@ require('math')
 local v = vim.api
 
 function nearest_match(direction) -- {{{
-  local search_flag = 'n'
+  local search_flag = 'nc'
   if direction == 0 then
     search_flag = search_flag .. 'b'
   end
@@ -23,17 +23,24 @@ function nearest_match(direction) -- {{{
   local n_matched_under_cursor = 0
 
   function update_nearest_match(line, pattern, word) -- {{{
-    local col = find_word_in_line(line, pattern, word, direction)
     if n_matched_under_cursor == 1 then
       return
     end
 
-    if line == current_line and col <= current_col
-      and #word + col > current_col then
+    local col = find_word_in_line(line, pattern, word, direction)
+    local special_match_col = find_word_in_line(line, pattern, word, direction, 1)
+
+    -- print('[under_cursor check] line: ' .. line .. ', current_line: '
+    --   .. current_line .. ', current_col: ', current_col .. ', #word: '
+    --   .. #word .. ', col: ' .. special_match_col)
+
+    if line == current_line and special_match_col <= current_col
+      and #word + special_match_col > current_col then
       -- matched word under cursor
+      -- print('[match under cursor!], word:', word)
       n_matched_under_cursor = 1
       n_matched_line = line
-      n_matched_col = col
+      n_matched_col = special_match_col
       n_matched_word = word
       return
     end
@@ -160,7 +167,8 @@ function nearest_match(direction) -- {{{
   }
 end -- }}}
 
-function find_word_in_line(line, pattern, word, direction) -- {{{
+function find_word_in_line(line, pattern, word, direction, match_cursor) -- {{{
+  match_cursor = match_cursor or 0
   -- (1, 0)-indexed cursor position
   local current_cursor = v.nvim_win_get_cursor(0)
   local current_line = current_cursor[1]
@@ -205,7 +213,12 @@ function find_word_in_line(line, pattern, word, direction) -- {{{
     local res = v.nvim_call_function('match', {
         content, pattern, current_col
       })
-    if res == current_col then
+
+    -- print('content: "' .. content .. '"' .. ', pattern:' .. pattern)
+    -- print('current_col: ' .. current_col .. ', match_cursor:', match_cursor
+    --   .. ', res: ' .. res)
+
+    if res == current_col and match_cursor == 0 then
       return v.nvim_call_function('match', {
           content, pattern, current_col + 1
         })
