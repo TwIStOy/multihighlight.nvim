@@ -1,10 +1,10 @@
-module('match', package.seeall)
+module('multihighlight.match', package.seeall)
 
 require('math')
 
 local v = vim.api
 
-function nearest_match(direction)
+function nearest_match(direction) -- {{{
   local search_flag = 'n'
   if direction == 0 then
     search_flag = search_flag .. 'b'
@@ -15,10 +15,11 @@ function nearest_match(direction)
   local current_line = current_cursor[1]
   local current_col = current_cursor[2]
 
-  print('[search_flag]: ', search_flag)
+  -- print('[search_flag]: ', search_flag)
 
   local n_matched_line = -1
   local n_matched_col = -1
+  local n_matched_word = ''
 
   function update_nearest_match(line, pattern, word)
     if n_matched_line == -1 then
@@ -27,6 +28,7 @@ function nearest_match(direction)
       if col ~= -1 then
         n_matched_line = line
         n_matched_col = col
+        n_matched_word = word
       end
       return
     end
@@ -39,15 +41,18 @@ function nearest_match(direction)
           local col = find_word_in_line(line, pattern, word, direction)
           if math.abs(col - current_col) < math.abs(col - n_matched_col) then
             n_matched_col = col
+            n_matched_word = word
           end
         else
           if direction == 1 then
             if col < n_matched_col then
               n_matched_col = col
+              n_matched_word = word
             end
           else
             if col > n_matched_col then
               n_matched_col = col
+              n_matched_word = word
             end
           end
         end
@@ -57,17 +62,18 @@ function nearest_match(direction)
 
     if direction == 1 then
       -- direction 1
-      print('check', line, 'vs', n_matched_line)
+      -- print('check', line, 'vs', n_matched_line)
       if (line >= current_line and n_matched_line >= current_line)
         or (line <= current_line and n_matched_line <= current_line) then
         -- same side, select the smaller one
-        print('[same side]')
+        -- print('[same side]')
         if line < n_matched_line then
           local col = find_word_in_line(line, pattern, word, direction)
-          print('[try smaller]', col)
+          -- print('[try smaller]', col)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
+            n_matched_word = word
           end
         end
       else
@@ -77,6 +83,7 @@ function nearest_match(direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
+            n_matched_word = word
           end
         end
       end
@@ -90,6 +97,7 @@ function nearest_match(direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
+            n_matched_word = word
           end
         end
       else
@@ -99,6 +107,7 @@ function nearest_match(direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
+            n_matched_word = word
           end
         end
       end
@@ -116,13 +125,13 @@ function nearest_match(direction)
 
     if #word > 0 then
       local pattern = item.pattern
-      print('check word: ' ..  word .. ', pattern: ' .. pattern)
+      -- print('check word: ' ..  word .. ', pattern: ' .. pattern)
 
       local matched_line = v.nvim_call_function('search', {
           pattern, search_flag
         })
 
-      print('matched_line: ', matched_line)
+      -- print('matched_line: ', matched_line)
 
       if matched_line ~= 0 then
         update_nearest_match(matched_line, pattern, word)
@@ -130,9 +139,13 @@ function nearest_match(direction)
     end
   end
 
-  print(n_matched_line, n_matched_col)
-  return { n_matched_line, n_matched_col }
-end
+  -- print(n_matched_line, n_matched_col)
+  return {
+    line = n_matched_line,
+    col = n_matched_col,
+    word = n_matched_word
+  }
+end -- }}}
 
 function find_word_in_line(line, pattern, word, direction) -- {{{
   -- (1, 0)-indexed cursor position

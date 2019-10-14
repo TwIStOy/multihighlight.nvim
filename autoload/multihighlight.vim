@@ -106,7 +106,11 @@ function! multihighlight#nohighlight_word(word) abort " {{{
 endfunction " }}}
 
 function! multihighlight#navigation(direction) abort " {{{
-  let current_word = s:nearest_group_at_cursor()
+  " let current_word = s:nearest_group_at_cursor()
+  let next_match = luaeval(
+        \ "require('multihighlight.match').nearest_match(_A)",
+        \ a:direction)
+  let current_word = next_match.word
 
   if s:case_ignored(current_word)
     let current_word = tolower(current_word)
