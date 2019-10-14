@@ -20,15 +20,18 @@ function nearest_match(direction) -- {{{
   local n_matched_line = -1
   local n_matched_col = -1
   local n_matched_word = ''
-  local n_matched_under_cursor = false
+  local n_matched_under_cursor = 0
 
   function update_nearest_match(line, pattern, word) -- {{{
     local col = find_word_in_line(line, pattern, word, direction)
+    if n_matched_under_cursor == 1 then
+      return
+    end
 
     if line == current_line and col <= current_col
       and #word + col > current_col then
       -- matched word under cursor
-      n_matched_under_cursor = true
+      n_matched_under_cursor = 1
       n_matched_line = line
       n_matched_col = col
       n_matched_word = word
@@ -142,7 +145,7 @@ function nearest_match(direction) -- {{{
       if matched_line ~= 0 then
         update_nearest_match(matched_line, pattern, word)
 
-        if n_matched_under_cursor then
+        if n_matched_under_cursor == 1 then
           break
         end
       end
