@@ -20,11 +20,23 @@ function nearest_match(direction) -- {{{
   local n_matched_line = -1
   local n_matched_col = -1
   local n_matched_word = ''
+  local n_matched_under_cursor = false
 
-  function update_nearest_match(line, pattern, word)
+  function update_nearest_match(line, pattern, word) -- {{{
+    local col = find_word_in_line(line, pattern, word, direction)
+
+    if line == current_line and col <= current_col
+      and #word + col > current_col then
+      -- matched word under cursor
+      n_matched_under_cursor = true
+      n_matched_line = line
+      n_matched_col = col
+      n_matched_word = word
+      return
+    end
+
     if n_matched_line == -1 then
       -- first match
-      local col = find_word_in_line(line, pattern, word, direction)
       if col ~= -1 then
         n_matched_line = line
         n_matched_col = col
@@ -34,11 +46,9 @@ function nearest_match(direction) -- {{{
     end
 
     if n_matched_line == line then
-      local col = find_word_in_line(line, pattern, word, direction)
       if col ~= -1 then
         if line == current_line then
           -- same line
-          local col = find_word_in_line(line, pattern, word, direction)
           if math.abs(col - current_col) < math.abs(col - n_matched_col) then
             n_matched_col = col
             n_matched_word = word
@@ -68,7 +78,6 @@ function nearest_match(direction) -- {{{
         -- same side, select the smaller one
         -- print('[same side]')
         if line < n_matched_line then
-          local col = find_word_in_line(line, pattern, word, direction)
           -- print('[try smaller]', col)
           if col ~= -1 then
             n_matched_line = line
@@ -79,7 +88,6 @@ function nearest_match(direction) -- {{{
       else
         -- different side, select the bigger one
         if line > n_matched_line then
-          local col = find_word_in_line(line, pattern, word, direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
@@ -93,7 +101,6 @@ function nearest_match(direction) -- {{{
         or (line <= current_line and n_matched_line <= current_line) then
         -- same side, select the bigger one
         if line > n_matched_line then
-          local col = find_word_in_line(line, pattern, word, direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
@@ -103,7 +110,6 @@ function nearest_match(direction) -- {{{
       else
         -- different side, select the smaller one
         if line < n_matched_line then
-          local col = find_word_in_line(line, pattern, word, direction)
           if col ~= -1 then
             n_matched_line = line
             n_matched_col = col
@@ -112,7 +118,7 @@ function nearest_match(direction) -- {{{
         end
       end
     end
-  end
+  end -- }}}
 
   for i, item in ipairs(v.nvim_call_function('getmatches', {})) do
     local word = ''
@@ -135,6 +141,10 @@ function nearest_match(direction) -- {{{
 
       if matched_line ~= 0 then
         update_nearest_match(matched_line, pattern, word)
+
+        if n_matched_under_cursor then
+          break
+        end
       end
     end
   end
