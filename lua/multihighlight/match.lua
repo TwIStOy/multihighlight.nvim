@@ -133,7 +133,7 @@ function nearest_match(direction) -- {{{
   for i, item in ipairs(v.nvim_call_function('getmatches', {})) do
     local word = ''
     for w, id in pairs(v.nvim_get_var('multihighlight#matches_id')) do
-      if id == item.id then
+      if id == item.id and type(w) == "string" then
         word = w
         break
       end
@@ -141,7 +141,6 @@ function nearest_match(direction) -- {{{
 
     if #word > 0 then
       local pattern = item.pattern
-      -- print('check word: ' ..  word .. ', pattern: ' .. pattern)
 
       local matched_line = v.nvim_call_function('search', {
           pattern, search_flag
